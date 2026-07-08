@@ -1,28 +1,20 @@
 class Solution {
 public:
-    bool fun(int st,int n,vector<vector<int>>& adj,vector<int>&col){
-        queue<int>qu;
-        qu.push(st);
-        col[st]=0;
-        while(!qu.empty()){
-            int node=qu.front();
-            qu.pop();
-            for(int x:adj[node]){
-                if(col[x]==-1){
-                    if(col[node]==0){
-                        col[x]=1;
-                    }
-                    else{
-                        col[x]=0;
-                    }
-                    qu.push(x);
+    bool dfs(int st,int pre,vector<vector<int>>& adj,vector<int>&col){
+        if(pre==-1 || pre==1){
+            col[st]=0;
+        }
+        else{
+            col[st]=1;
+        }
+        for(auto x:adj[st]){
+            if(col[x]==-1){
+                if(!dfs(x,col[st],adj,col)){
+                    return false;
                 }
-                else{
-                    if(col[x]==col[node]){
-                        return false;
-                    }
-                }
-
+            }
+            else if(col[x]==col[st]){
+                return false;
             }
         }
         return true;
@@ -32,7 +24,7 @@ public:
         vector<int>col(n,-1);
         for(int i=0;i<n;i++){
             if(col[i]==-1){
-                if(!fun(i,n,adj,col)){
+                if(!dfs(i,-1,adj,col)){
                     return false;
                 }
             }
