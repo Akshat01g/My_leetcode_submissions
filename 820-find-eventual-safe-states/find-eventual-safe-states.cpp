@@ -1,38 +1,33 @@
 class Solution {
 public:
-    bool dfs(int i,vector<vector<int>>&adj,vector<bool>&vis,vector<bool>&pathvis,vector<bool>&check){
-        vis[i]=true;
-        pathvis[i]=true;
-        for(auto x:adj[i]){
-            if(!vis[x]){
-                if(dfs(x,adj,vis,pathvis,check)){
-                    return true;
-                }
-            }
-            else if(pathvis[x]){
-                return true;
-            }
-        }
-        check[i]=true;
-        pathvis[i]=false;
-        return false;
-    }
     vector<int> eventualSafeNodes(vector<vector<int>>& adj) {
         int V=adj.size();
-        vector<bool>vis(V,false);
-        vector<bool>pathvis(V,false);
-        vector<bool>check(V,false);
+        vector<vector<int>>adjrev(V);
+        vector<int>ans,indegree(V,0);
         for(int i=0;i<V;i++){
-            if(!vis[i]){
-                dfs(i,adj,vis,pathvis,check);
+            for(auto x:adj[i]){
+                adjrev[x].push_back(i);
+                indegree[i]++;
             }
         }
-        vector<int>ans;
+        queue<int>qu;
         for(int i=0;i<V;i++){
-            if(check[i]){
-                ans.push_back(i);
+            if(indegree[i]==0){
+                qu.push(i);
             }
         }
+        while(!qu.empty()){
+            int node=qu.front();
+            qu.pop();
+            ans.push_back(node);
+            for(auto x:adjrev[node]){
+                indegree[x]--;
+                if(indegree[x]==0){
+                    qu.push(x);
+                }
+            }
+        }
+        sort(ans.begin(),ans.end());
         return ans;
     }
 };
